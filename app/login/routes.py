@@ -2,11 +2,20 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from app import config
 from . import login
 
-
+@login.route('/')
+def home():
+    if 'loggedin' in session:
+        return render_template('home.html', msg=msg) 
+    else:
+        msg = 'Login'
+    return render_template('index.html', msg=msg) 
 
 @login.route('/Login/', methods=['GET', 'POST'])
 def index():
     msg = ''
+    if 'loggedin' in session:
+        return render_template('home.html', msg=msg) 
+
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         username = request.form['username']
         password = request.form['password']
@@ -19,7 +28,7 @@ def index():
             session['loggedin'] = True
             session['id'] = usuarios['UserId']
             session['username'] = usuarios['Username']
-            return 'Logged in successfully!'
+            return render_template('home.html', msg=msg) 
         else:
             msg = 'Incorrect username/password!'
     return render_template('index.html', msg=msg) 
